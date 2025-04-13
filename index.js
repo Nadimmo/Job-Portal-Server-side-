@@ -25,10 +25,21 @@ const client = new MongoClient(uri, {
 });
 
 async function run() {
+    const  CollectionOfAllJobs = client.db('job_portalDB').collection('all_jobs')  
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-
+    //  ....all job collection...
+    app.get('/allJobs', async (req, res) => {
+      const result = await CollectionOfAllJobs.find().toArray()
+      res.send(result)
+    })
+    app.get("/allJobs/:id", async(req,res)=>{
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await CollectionOfAllJobs.findOne(query);
+        res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
