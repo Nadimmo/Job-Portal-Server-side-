@@ -26,6 +26,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
     const  CollectionOfAllJobs = client.db('job_portalDB').collection('all_jobs')  
+    const  CollectionOfCompany = client.db('job_portalDB').collection('allCompaney')  
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -38,6 +39,19 @@ async function run() {
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await CollectionOfAllJobs.findOne(query);
+        res.send(result);
+    })
+
+
+    // ......all  company collection....../
+    app.get('/allCompany', async (req, res) => {
+      const result = await CollectionOfCompany.find().toArray()
+      res.send(result)
+    })
+    app.get("/allCompany/:id", async(req,res)=>{
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await CollectionOfCompany.findOne(query);
         res.send(result);
     })
 
