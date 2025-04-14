@@ -27,6 +27,7 @@ const client = new MongoClient(uri, {
 async function run() {
     const  CollectionOfAllJobs = client.db('job_portalDB').collection('all_jobs')  
     const  CollectionOfCompany = client.db('job_portalDB').collection('allCompaney')  
+    const  CollectionOfReviews = client.db('job_portalDB').collection('allReviews')  
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -44,16 +45,28 @@ async function run() {
 
 
     // ......all  company collection....../
-    app.get('/allCompany', async (req, res) => {
+    app.get('/allCompanies', async (req, res) => {
       const result = await CollectionOfCompany.find().toArray()
       res.send(result)
     })
-    app.get("/allCompany/:id", async(req,res)=>{
+    app.get("/allCompanies/:id", async(req,res)=>{
         const id = req.params.id;
         const query = { _id: new ObjectId(id) };
         const result = await CollectionOfCompany.findOne(query);
         res.send(result);
     })
+
+    // .......all reviews collection....../ 
+    app.get('/allReviews', async (req, res) => {
+      const result = await CollectionOfReviews.find().toArray()
+      res.send(result)
+    })
+    app.get("/allReviews/:id", async(req,res)=>{
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await CollectionOfReviews.findOne(query);
+      res.send(result); 
+  })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
