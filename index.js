@@ -50,6 +50,11 @@ async function run() {
 
 
     // ......all  company collection....../
+    app.post('/newCompany', async (req, res) => {
+      const newCompany = req.body;
+      const result = await CollectionOfCompany.insertOne(newCompany);
+      res.send(result)
+    })
     app.get('/allCompanies', async (req, res) => {
       const result = await CollectionOfCompany.find().toArray()
       res.send(result)
