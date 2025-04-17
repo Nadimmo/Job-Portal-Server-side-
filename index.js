@@ -28,6 +28,7 @@ async function run() {
     const  CollectionOfAllJobs = client.db('job_portalDB').collection('all_jobs')  
     const  CollectionOfCompany = client.db('job_portalDB').collection('allCompaney')  
     const  CollectionOfReviews = client.db('job_portalDB').collection('allReviews')  
+    const  CollectionOfLatestBlogs = client.db('job_portalDB').collection('blogs')  
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -78,6 +79,16 @@ async function run() {
       res.send(result); 
   })
 
+  // ....blogs and news...
+  app.post('/latestBlogs', async (req, res) => {
+    const newBlog = req.body;
+    const result = await CollectionOfLatestBlogs.insertOne(newBlog);
+    res.send(result)
+  })
+  app.get('/latestBlogs', async (req, res) => {
+    const result = await CollectionOfLatestBlogs.find().toArray()
+    res.send(result)
+  })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
