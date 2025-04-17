@@ -32,6 +32,11 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     //  ....all job collection...
+    app.post('/newJobs', async (req, res) => {
+      const newJob = req.body;
+      const result = await CollectionOfAllJobs.insertOne(newJob);
+      res.send(result)
+    })
     app.get('/allJobs', async (req, res) => {
       const result = await CollectionOfAllJobs.find().toArray()
       res.send(result)
