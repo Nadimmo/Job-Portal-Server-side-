@@ -12,7 +12,7 @@ app.use(cors())
 app.use(express.json()) 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.rrkijcq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -43,12 +43,17 @@ async function run() {
       res.send(result)
     })
     app.get("/allJobs/:id", async(req,res)=>{
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await CollectionOfAllJobs.findOne(query);
-        res.send(result);
+        const Id =  req.params.id
+        const filter = {_id: new ObjectId(Id)}
+        const result = await CollectionOfAllJobs.findOne(filter)
+        res.send(result)
     })
-
+    app.delete("/allJobs/:id", async(req,res)=>{
+        const Id =  req.params.id
+        const filter = {_id: new ObjectId(Id)}
+        const result = await CollectionOfAllJobs.deleteOne(filter)
+        res.send(result)
+    })
 
     // ......all  company collection....../
     app.post('/newCompany', async (req, res) => {
@@ -61,8 +66,8 @@ async function run() {
       res.send(result)
     })
     app.get("/allCompanies/:id", async(req,res)=>{
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
+        const id = req.params.id
+        const query = { _id: new ObjectId(id) }
         const result = await CollectionOfCompany.findOne(query);
         res.send(result);
     })
@@ -73,8 +78,8 @@ async function run() {
       res.send(result)
     })
     app.get("/allReviews/:id", async(req,res)=>{
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
       const result = await CollectionOfReviews.findOne(query);
       res.send(result); 
   })
