@@ -144,6 +144,35 @@ async function run() {
       res.send(result);
   })
 
+  app.get('/updateBlog', async (req, res) => {
+    const result = await CollectionOfLatestBlogs.find().toArray()
+    res.send(result)
+  })
+  app.get("/updateBlog/:id", async(req,res)=>{
+      const Id =  req.params.id
+      const filter = {_id: new ObjectId(Id)}
+      const result = await CollectionOfLatestBlogs.findOne(filter)
+      res.send(result)
+  })
+  app.put("/updateBlog/:id", async(req,res)=>{
+      const Id =  req.params.id
+      const filter = {_id: new ObjectId(Id)}
+      const updatedJob = req.body
+      const updateDoc = {
+          $set: {
+              title: updatedJob.title,
+              image: updatedJob.image,
+              summary: updatedJob.summary,
+              category: updatedJob.category,
+              date: updatedJob.date,
+          },
+      };
+      const result = await CollectionOfLatestBlogs.updateOne(filter, updateDoc)
+      res.send(result)
+  })
+
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
