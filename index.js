@@ -55,6 +55,7 @@ async function run() {
         res.send(result)
     })
 
+    
     // ......all  company collection....../
     app.post('/newCompany', async (req, res) => {
       const newCompany = req.body;
@@ -72,6 +73,7 @@ async function run() {
         res.send(result);
     })
 
+
     // .......all reviews collection....../ 
     app.get('/allReviews', async (req, res) => {
       const result = await CollectionOfReviews.find().toArray()
@@ -84,6 +86,7 @@ async function run() {
       res.send(result); 
   })
 
+
   // ....blogs and news...
   app.post('/latestBlogs', async (req, res) => {
     const newBlog = req.body;
@@ -94,6 +97,20 @@ async function run() {
     const result = await CollectionOfLatestBlogs.find().toArray()
     res.send(result)
   })
+  app.get("/latestBlogs/:id", async(req,res)=>{
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await CollectionOfLatestBlogs.findOne(query);
+      res.send(result);
+  })
+  app.delete("/latestBlogs/:id", async(req,res)=>{
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await CollectionOfLatestBlogs.deleteOne(query);
+      res.send(result);
+  })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
