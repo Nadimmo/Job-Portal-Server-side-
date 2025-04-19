@@ -54,9 +54,43 @@ async function run() {
         const result = await CollectionOfAllJobs.deleteOne(filter)
         res.send(result)
     })
+                 
+    app.get('/updateJob', async (req, res) => {
+      const result = await CollectionOfAllJobs.find().toArray()
+      res.send(result)
+    })
+    app.get("/updateJob/:id", async(req,res)=>{
+        const Id =  req.params.id
+        const filter = {_id: new ObjectId(Id)}
+        const result = await CollectionOfAllJobs.findOne(filter)
+        res.send(result)
+    })
+    app.put("/updateJob/:id", async(req,res)=>{
+        const Id =  req.params.id
+        const filter = {_id: new ObjectId(Id)}
+        const updatedJob = req.body
+        const updateDoc = {
+            $set: {
+                title: updatedJob.title,
+                companyName: updatedJob.companyName,
+                location: updatedJob.location,
+                salary: updatedJob.salary,
+                type: updatedJob.type,
+                experienceLevel: updatedJob.experienceLevel,
+                shortDescription: updatedJob.shortDescription,
+                avatar: updatedJob.avatar,
+                responsibilities: updatedJob.responsibilities,
+                requirements: updatedJob.requirements,
+                education: updatedJob.education,
+                deadline: updatedJob.deadline
+            },
+        };
+        const result = await CollectionOfAllJobs.updateOne(filter, updateDoc)
+        res.send(result)
+    })
 
-    
-    // ......all  company collection....../
+
+    // ..............all  company collection api................./
     app.post('/newCompany', async (req, res) => {
       const newCompany = req.body;
       const result = await CollectionOfCompany.insertOne(newCompany);
@@ -74,7 +108,7 @@ async function run() {
     })
 
 
-    // .......all reviews collection....../ 
+    // .............all reviews collection api............./ 
     app.get('/allReviews', async (req, res) => {
       const result = await CollectionOfReviews.find().toArray()
       res.send(result)
@@ -87,7 +121,7 @@ async function run() {
   })
 
 
-  // ....blogs and news...
+  // ..........blogs and news api...........
   app.post('/latestBlogs', async (req, res) => {
     const newBlog = req.body;
     const result = await CollectionOfLatestBlogs.insertOne(newBlog);
