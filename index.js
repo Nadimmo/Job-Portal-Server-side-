@@ -29,6 +29,7 @@ async function run() {
     const  CollectionOfCompany = client.db('job_portalDB').collection('allCompaney')  
     const  CollectionOfReviews = client.db('job_portalDB').collection('allReviews')  
     const  CollectionOfLatestBlogs = client.db('job_portalDB').collection('blogs')  
+    const  CollectionOfUsers = client.db('job_portalDB').collection('users')  
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -169,6 +170,23 @@ async function run() {
       };
       const result = await CollectionOfLatestBlogs.updateOne(filter, updateDoc)
       res.send(result)
+  })
+
+  // ................user collection api...........
+  app.post('/users', async (req, res) => {
+    const newUser = req.body;
+    const email = req.body.email
+    const filter = { email: email }
+    const existing = await CollectionOfUsers.findOne(filter)
+    if (existing) {
+      return res.send({ message: 'User already exists' })
+    }
+    const result = await CollectionOfUsers.insertOne(newUser);
+    res.send(result)
+  })
+  app.get('/users', async (req, res) => {
+    const result = await CollectionOfUsers.find().toArray()
+    res.send(result)
   })
 
 
