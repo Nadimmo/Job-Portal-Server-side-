@@ -101,11 +101,24 @@ async function run() {
       const result = await CollectionOfAppliedJobs.insertOne(jobs)
       res.send(result)
     })
-    // ....show all applied jobs.....
+    // ....show all applied jobs for admin.....
     app.get("/appliedAllJobs", async (req, res) => {
       const result = await CollectionOfAppliedJobs.find().toArray()
       res.send(result)
     })
+    app.get("/appliedAllJobs/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await CollectionOfAppliedJobs.findOne(query);
+      res.send(result);
+    })
+    app.delete("/appliedAllJobs/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await CollectionOfAppliedJobs.deleteOne(query);
+      res.send(result);
+    })
+
     //show applied jobs by user email
     app.get("/appliedJobs", async (req, res) => {
       const email = req.query.email
