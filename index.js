@@ -30,6 +30,7 @@ async function run() {
     const  CollectionOfReviews = client.db('job_portalDB').collection('allReviews')  
     const  CollectionOfLatestBlogs = client.db('job_portalDB').collection('blogs')  
     const  CollectionOfUsers = client.db('job_portalDB').collection('users')  
+    const  CollectionOfAppliedJobs = client.db('job_portalDB').collection('appliedJobs')  
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -49,13 +50,16 @@ async function run() {
         const result = await CollectionOfAllJobs.findOne(filter)
         res.send(result)
     })
+    app.get("/latestJobs", async(req,res)=>{
+        const result = await CollectionOfAllJobs.find().sort({ _id: -1 }).limit(6).toArray()
+        res.send(result)
+    })
     app.delete("/allJobs/:id", async(req,res)=>{
         const Id =  req.params.id
         const filter = {_id: new ObjectId(Id)}
         const result = await CollectionOfAllJobs.deleteOne(filter)
         res.send(result)
-    })
-                 
+    })           
     app.get('/updateJob', async (req, res) => {
       const result = await CollectionOfAllJobs.find().toArray()
       res.send(result)
@@ -89,6 +93,25 @@ async function run() {
         const result = await CollectionOfAllJobs.updateOne(filter, updateDoc)
         res.send(result)
     })
+
+
+    // ...............user apply job api colloection..........
+    app.post("/appliedJobs", async(req,res) =>{
+      const jobs = req.body;
+      const result = await CollectionOfAppliedJobs.insertOne(jobs)
+      res.send(result)
+    })
+    app.get("/appliedJobs", async(req,res)=>{
+      const result = await CollectionOfAppliedJobs.find().toArray()
+      res.send(result)
+    })
+    //get apply jobs by user email
+    // app.get("/appliedJobs", async(req,res)=>{
+    //   const email = req.query.email
+    //   const query = {email: email}
+    //   const result = await CollectionOfAppliedJobs.find(query).toArray()
+    //   res.send(result)
+    // })
 
 
     // ..............all  company collection api................./
