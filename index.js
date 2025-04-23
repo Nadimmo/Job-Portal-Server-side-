@@ -148,7 +148,7 @@ async function run() {
       res.send(result)
     })
     //show all saved jobs by user email
-    app.get("/savedJobs", async (req, res) => {
+    app.get("/saveJobs", async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfSaveJobs.find(query).toArray()
