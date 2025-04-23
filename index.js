@@ -31,6 +31,7 @@ async function run() {
   const CollectionOfLatestBlogs = client.db('job_portalDB').collection('blogs')
   const CollectionOfUsers = client.db('job_portalDB').collection('users')
   const CollectionOfAppliedJobs = client.db('job_portalDB').collection('appliedJobs')
+  const CollectionOfSaveJobs = client.db('job_portalDB').collection('saveJobs')
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -136,6 +137,38 @@ async function run() {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.deleteOne(query);
+      res.send(result);
+    })
+
+
+    // .........save jobs collection api.........
+    app.post('/savedJobs', async (req, res) => {
+      const jobs = req.body;
+      const result = await CollectionOfSaveJobs.insertOne(jobs)
+      res.send(result)
+    })
+    //show all saved jobs by user email
+    app.get("/savedJobs", async (req, res) => {
+      const email = req.query.email
+      const query = { email: email }
+      const result = await CollectionOfSaveJobs.find(query).toArray()
+      res.send(result)
+    })
+    //show all saved jobs for admin
+    app.get('/savedJobs', async (req, res) => {
+      const result = await CollectionOfSaveJobs.find().toArray()
+      res.send(result)
+    })
+    app.get("/savedJobs/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await CollectionOfSaveJobs.findOne(query);
+      res.send(result);
+    })
+    app.delete("/savedJobs/:id", async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await CollectionOfSaveJobs.deleteOne(query);
       res.send(result);
     })
 
