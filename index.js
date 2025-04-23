@@ -94,6 +94,16 @@ async function run() {
       const result = await CollectionOfAllJobs.updateOne(filter, updateDoc)
       res.send(result)
     })
+    app.get('/showJobDetails', async (req, res) => {
+      const result = await CollectionOfAllJobs.find().toArray()
+      res.send(result)
+    })
+    app.get("/showJobDetails/:id", async (req, res) => {
+      const Id = req.params.id
+      const filter = { _id: new ObjectId(Id) }
+      const result = await CollectionOfAllJobs.findOne(filter)
+      res.send(result)
+    })
 
 
     // ...............user apply job api colloection..........
