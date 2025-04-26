@@ -79,23 +79,23 @@ async function run() {
       const result = await CollectionOfAllJobs.find().sort({ _id: -1 }).limit(6).toArray()
       res.send(result)
     })
-    app.delete("/allJobs/:id", async (req, res) => {
+    app.delete("/allJobs/:id", verifyToken, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfAllJobs.deleteOne(filter)
       res.send(result)
     })
-    app.get('/updateJob', async (req, res) => {
+    app.get('/updateJob',  async (req, res) => {
       const result = await CollectionOfAllJobs.find().toArray()
       res.send(result)
     })
-    app.get("/updateJob/:id", async (req, res) => {
+    app.get("/updateJob/:id",  async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfAllJobs.findOne(filter)
       res.send(result)
     })
-    app.put("/updateJob/:id", async (req, res) => {
+    app.put("/updateJob/:id", verifyToken, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const updatedJob = req.body
@@ -182,29 +182,25 @@ async function run() {
       res.send(result)
     })
     //show all saved jobs by user email
-    app.get("/saveJobs", async (req, res) => {
+    app.get("/saveJobs", verifyToken, async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfSaveJobs.find(query).toArray()
       res.send(result)
     })
-    //show all saved jobs for admin
-    app.get('/savedJobs', async (req, res) => {
-      const result = await CollectionOfSaveJobs.find().toArray()
-      res.send(result)
-    })
-    app.get("/savedJobs/:id", async (req, res) => {
+    app.get("/saveJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfSaveJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/savedJobs/:id", async (req, res) => {
+    app.delete("/saveJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfSaveJobs.deleteOne(query);
       res.send(result);
     })
+    
 
 
     // ..............all  company collection api................./
@@ -269,24 +265,24 @@ async function run() {
       const result = await CollectionOfLatestBlogs.findOne(query);
       res.send(result);
     })
-    app.delete("/latestBlogs/:id", verifyToken, async (req, res) => {
+    app.delete("/latestBlogs/:id", async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfLatestBlogs.deleteOne(query);
       res.send(result);
     })
 
-    app.get('/updateBlog', verifyToken, async (req, res) => {
+    app.get('/updateBlog',  async (req, res) => {
       const result = await CollectionOfLatestBlogs.find().toArray()
       res.send(result)
     })
-    app.get("/updateBlog/:id", verifyToken, async (req, res) => {
+    app.get("/updateBlog/:id",  async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfLatestBlogs.findOne(filter)
       res.send(result)
     })
-    app.put("/updateBlog/:id", verifyToken, async (req, res) => {
+    app.put("/updateBlog/:id",  async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const updatedJob = req.body
@@ -315,17 +311,17 @@ async function run() {
       const result = await CollectionOfUsers.insertOne(newUser);
       res.send(result)
     })
-    app.get('/users', async (req, res) => {
+    app.get('/users', verifyToken, async (req, res) => {
       const result = await CollectionOfUsers.find().toArray()
       res.send(result)
     })
-    app.get('/users/:id', async (req, res) => {
+    app.get('/users/:id', verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfUsers.findOne(query);
       res.send(result);
     })
-    app.delete("/users/:id", async (req, res) => {
+    app.delete("/users/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfUsers.deleteOne(query);
