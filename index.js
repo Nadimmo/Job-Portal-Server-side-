@@ -36,6 +36,22 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+
+    const verifyToken = (req,res,next)=>{
+     if(!req.headers.authorization){
+      return res.status(401).send({message:'unauthorized access'})
+     }
+      const token = req.headers.authorization.split(' ')[1]
+      console.log("token", token)
+      jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+        if(err){
+          return res.status(403).send({message:'forbidden access'})
+        }
+        req.decoded = decoded
+        next()
+      })
+    }
+
     //create jwt
     app.post('/jwt', (req, res) => {
       const user = req.body
@@ -43,10 +59,8 @@ async function run() {
       res.send({ token })
     })
 
-
-
     //  ....all job collection...
-    app.post('/newJobs', async (req, res) => {
+    app.post('/newJobs',  async (req, res) => {
       const newJob = req.body;
       const result = await CollectionOfAllJobs.insertOne(newJob);
       res.send(result)
@@ -116,24 +130,24 @@ async function run() {
     })
 
 
-    // ...............user apply job api colloection..........
+    // ...............user apply job api collection..........
     app.post("/appliedJobs", async (req, res) => {
       const jobs = req.body;
       const result = await CollectionOfAppliedJobs.insertOne(jobs)
       res.send(result)
     })
     // ....show all applied jobs for admin.....
-    app.get("/appliedAllJobs", async (req, res) => {
+    app.get("/appliedAllJobs", verifyToken, async (req, res) => {
       const result = await CollectionOfAppliedJobs.find().toArray()
       res.send(result)
     })
-    app.get("/appliedAllJobs/:id", async (req, res) => {
+    app.get("/appliedAllJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/appliedAllJobs/:id", async (req, res) => {
+    app.delete("/appliedAllJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.deleteOne(query);
@@ -141,19 +155,19 @@ async function run() {
     })
 
     //show applied jobs by user email
-    app.get("/appliedJobs", async (req, res) => {
+    app.get("/appliedJobs", verifyToken, async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfAppliedJobs.find(query).toArray()
       res.send(result)
     })
-    app.get("/appliedJobs/:id", async (req, res) => {
+    app.get("/appliedJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/appliedJobs/:id", async (req, res) => {
+    app.delete("/appliedJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.deleteOne(query);
@@ -245,7 +259,7 @@ async function run() {
       const result = await CollectionOfLatestBlogs.insertOne(newBlog);
       res.send(result)
     })
-    app.get('/latestBlogs', async (req, res) => {
+    app.get('/latestBlogs',  async (req, res) => {
       const result = await CollectionOfLatestBlogs.find().toArray()
       res.send(result)
     })
@@ -255,24 +269,24 @@ async function run() {
       const result = await CollectionOfLatestBlogs.findOne(query);
       res.send(result);
     })
-    app.delete("/latestBlogs/:id", async (req, res) => {
+    app.delete("/latestBlogs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfLatestBlogs.deleteOne(query);
       res.send(result);
     })
 
-    app.get('/updateBlog', async (req, res) => {
+    app.get('/updateBlog', verifyToken, async (req, res) => {
       const result = await CollectionOfLatestBlogs.find().toArray()
       res.send(result)
     })
-    app.get("/updateBlog/:id", async (req, res) => {
+    app.get("/updateBlog/:id", verifyToken, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfLatestBlogs.findOne(filter)
       res.send(result)
     })
-    app.put("/updateBlog/:id", async (req, res) => {
+    app.put("/updateBlog/:id", verifyToken, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const updatedJob = req.body
