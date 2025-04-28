@@ -38,15 +38,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    const verifyToken = (req,res,next)=>{
-     if(!req.headers.authorization){
-      return res.status(401).send({message:'unauthorized access'})
-     }
+    const verifyToken = (req, res, next) => {
+      if (!req.headers.authorization) {
+        return res.status(401).send({ message: 'unauthorized access' })
+      }
       const token = req.headers.authorization.split(' ')[1]
       console.log("token", token)
       jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
-        if(err){
-          return res.status(403).send({message:'forbidden access'})
+        if (err) {
+          return res.status(403).send({ message: 'forbidden access' })
         }
         req.decoded = decoded
         next()
@@ -61,7 +61,7 @@ async function run() {
     })
 
     //  ....all job collection...
-    app.post('/newJobs',  async (req, res) => {
+    app.post('/newJobs', async (req, res) => {
       const newJob = req.body;
       const result = await CollectionOfAllJobs.insertOne(newJob);
       res.send(result)
@@ -86,11 +86,11 @@ async function run() {
       const result = await CollectionOfAllJobs.deleteOne(filter)
       res.send(result)
     })
-    app.get('/updateJob',  async (req, res) => {
+    app.get('/updateJob', async (req, res) => {
       const result = await CollectionOfAllJobs.find().toArray()
       res.send(result)
     })
-    app.get("/updateJob/:id",  async (req, res) => {
+    app.get("/updateJob/:id", async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfAllJobs.findOne(filter)
@@ -201,7 +201,7 @@ async function run() {
       const result = await CollectionOfSaveJobs.deleteOne(query);
       res.send(result);
     })
-    
+
 
 
     // ..............all  company collection api................./
@@ -233,7 +233,7 @@ async function run() {
 
 
     // .............all reviews collection api............./ 
-    app.post("/review", async(req,res)=>{
+    app.post("/review", async (req, res) => {
       const review = req.body;
       const result = await CollectionOfReviews.insertOne(review)
       res.send(result)
@@ -255,9 +255,21 @@ async function run() {
       const result = await CollectionOfContact.insertOne(contact)
       res.send(result)
     })
-    app.get('/contact', async(req,res)=>{
+    app.get('/contact', async (req, res) => {
       const contact = req.body;
       const result = await CollectionOfContact.find(contact).toArray()
+      res.send(result)
+    })
+    app.get("/contact/:id", async (req, res) => {
+      const Id = req.params.id
+      const filter = { _id: new ObjectId(Id) }
+      const result = await CollectionOfContact.findOne(filter)
+      res.send(result)
+    })
+    app.delete("/contact/:id", async (req, res) => {
+      const Id = req.params.id
+      const filter = { _id: new ObjectId(Id) }
+      const result = await CollectionOfContact.deleteOne(filter)
       res.send(result)
     })
 
@@ -269,7 +281,7 @@ async function run() {
       const result = await CollectionOfLatestBlogs.insertOne(newBlog);
       res.send(result)
     })
-    app.get('/latestBlogs',  async (req, res) => {
+    app.get('/latestBlogs', async (req, res) => {
       const result = await CollectionOfLatestBlogs.find().toArray()
       res.send(result)
     })
@@ -286,17 +298,17 @@ async function run() {
       res.send(result);
     })
 
-    app.get('/updateBlog',  async (req, res) => {
+    app.get('/updateBlog', async (req, res) => {
       const result = await CollectionOfLatestBlogs.find().toArray()
       res.send(result)
     })
-    app.get("/updateBlog/:id",  async (req, res) => {
+    app.get("/updateBlog/:id", async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfLatestBlogs.findOne(filter)
       res.send(result)
     })
-    app.put("/updateBlog/:id",  async (req, res) => {
+    app.put("/updateBlog/:id", async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const updatedJob = req.body
@@ -341,7 +353,18 @@ async function run() {
       const result = await CollectionOfUsers.deleteOne(query);
       res.send(result);
     })
-
+    
+    app.patch("/users/makeAdmin/:id", verifyToken, async(req,res)=>{
+      const Id = req.params.id;
+      const filter = {_id: new ObjectId(Id)}
+      const updateDoc = {
+        $set:{
+          role: "admin"
+        }
+      }
+      const result = await CollectionOfUsers.updateOne(filter, updateDoc)
+      res.send(result)
+    })
 
 
 
