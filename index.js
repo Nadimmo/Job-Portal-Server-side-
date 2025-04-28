@@ -33,6 +33,7 @@ async function run() {
   const CollectionOfUsers = client.db('job_portalDB').collection('users')
   const CollectionOfAppliedJobs = client.db('job_portalDB').collection('appliedJobs')
   const CollectionOfSaveJobs = client.db('job_portalDB').collection('saveJobs')
+  const CollectionOfContact = client.db('job_portalDB').collection('contact')
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -247,6 +248,19 @@ async function run() {
       const result = await CollectionOfReviews.findOne(query);
       res.send(result);
     })
+
+    // ........contact api.............
+    app.post('/contact', async (req, res) => {
+      const contact = req.body;
+      const result = await CollectionOfContact.insertOne(contact)
+      res.send(result)
+    })
+    app.get('/contact', async(req,res)=>{
+      const contact = req.body;
+      const result = await CollectionOfContact.find(contact).toArray()
+      res.send(result)
+    })
+
 
 
     // ..........blogs and news api...........
