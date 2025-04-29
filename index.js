@@ -53,6 +53,18 @@ async function run() {
       })
     }
 
+    const verifyAdmin = async(req, res, next) => {
+      const email = req.decoded.email
+      // console.log("email", req.decoded.email)
+      const filter = { email: email }
+      const user = await CollectionOfUsers.findOne(filter)
+      const isAdmin = user.role === "admin"
+      if (!isAdmin) {
+        return res.status(403).send({ message: "Not authorized to perform this action" })
+      }
+      next()
+    }
+
     //create jwt
     app.post('/jwt', (req, res) => {
       const user = req.body
@@ -80,7 +92,7 @@ async function run() {
       const result = await CollectionOfAllJobs.find().sort({ _id: -1 }).limit(6).toArray()
       res.send(result)
     })
-    app.delete("/allJobs/:id", verifyToken, async (req, res) => {
+    app.delete("/allJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const result = await CollectionOfAllJobs.deleteOne(filter)
@@ -96,7 +108,7 @@ async function run() {
       const result = await CollectionOfAllJobs.findOne(filter)
       res.send(result)
     })
-    app.put("/updateJob/:id", verifyToken, async (req, res) => {
+    app.put("/updateJob/:id", verifyToken,  verifyAdmin, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const updatedJob = req.body
@@ -138,17 +150,17 @@ async function run() {
       res.send(result)
     })
     // ....show all applied jobs for admin.....
-    app.get("/appliedAllJobs", verifyToken, async (req, res) => {
+    app.get("/appliedAllJobs", verifyToken, verifyAdmin, async (req, res) => {
       const result = await CollectionOfAppliedJobs.find().toArray()
       res.send(result)
     })
-    app.get("/appliedAllJobs/:id", verifyToken, async (req, res) => {
+    app.get("/appliedAllJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/appliedAllJobs/:id", verifyToken, async (req, res) => {
+    app.delete("/appliedAllJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.deleteOne(query);
@@ -156,19 +168,19 @@ async function run() {
     })
 
     //show applied jobs by user email
-    app.get("/appliedJobs", verifyToken, async (req, res) => {
+    app.get("/appliedJobs", verifyToken, verifyAdmin, async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfAppliedJobs.find(query).toArray()
       res.send(result)
     })
-    app.get("/appliedJobs/:id", verifyToken, async (req, res) => {
+    app.get("/appliedJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/appliedJobs/:id", verifyToken, async (req, res) => {
+    app.delete("/appliedJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.deleteOne(query);
@@ -183,19 +195,19 @@ async function run() {
       res.send(result)
     })
     //show all saved jobs by user email
-    app.get("/saveJobs", verifyToken, async (req, res) => {
+    app.get("/saveJobs", verifyToken, verifyAdmin, async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfSaveJobs.find(query).toArray()
       res.send(result)
     })
-    app.get("/saveJobs/:id", verifyToken, async (req, res) => {
+    app.get("/saveJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfSaveJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/saveJobs/:id", verifyToken, async (req, res) => {
+    app.delete("/saveJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfSaveJobs.deleteOne(query);
@@ -337,33 +349,47 @@ async function run() {
       const result = await CollectionOfUsers.insertOne(newUser);
       res.send(result)
     })
-    app.get('/users', verifyToken, async (req, res) => {
+    app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
       const result = await CollectionOfUsers.find().toArray()
       res.send(result)
     })
-    app.get('/users/:id', verifyToken, async (req, res) => {
+    app.get('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfUsers.findOne(query);
       res.send(result);
     })
-    app.delete("/users/:id", verifyToken, async (req, res) => {
+    app.delete("/users/:id", verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfUsers.deleteOne(query);
       res.send(result);
     })
-    
-    app.patch("/users/makeAdmin/:id", verifyToken, async(req,res)=>{
+
+    app.patch("/users/makeAdmin/:id", verifyToken, verifyAdmin,  async (req, res) => {
       const Id = req.params.id;
-      const filter = {_id: new ObjectId(Id)}
+      const filter = { _id: new ObjectId(Id) }
       const updateDoc = {
-        $set:{
+        $set: {
           role: "admin"
         }
       }
       const result = await CollectionOfUsers.updateOne(filter, updateDoc)
       res.send(result)
+    })
+    app.get("/users/makeAdmin/:email", verifyToken, async (req, res) => {
+      const email = req.params.email
+      if (email !== req.decoded.email) {
+        return res.status(401).send({ message: "Unauthorize access" })
+      }
+
+      const filter = { email: email }
+      const user = await CollectionOfUsers.findOne(filter)
+      let admin = false
+      if (user) {
+        admin = user.role === "admin"
+      }
+      res.send({ admin })
     })
 
 
