@@ -7,10 +7,10 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 
-
-
-app.use(cors())
 app.use(express.json())
+app.use(cors({
+    origin: ["http://localhost:5173/", "https://job-portal-5d53a.web.app/", "https://job-portal-5d53a.firebaseapp.com/"]
+  }))
 
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -53,7 +53,7 @@ async function run() {
       })
     }
 
-    const verifyAdmin = async(req, res, next) => {
+    const verifyAdmin = async (req, res, next) => {
       const email = req.decoded.email
       // console.log("email", req.decoded.email)
       const filter = { email: email }
@@ -108,7 +108,7 @@ async function run() {
       const result = await CollectionOfAllJobs.findOne(filter)
       res.send(result)
     })
-    app.put("/updateJob/:id", verifyToken,  verifyAdmin, async (req, res) => {
+    app.put("/updateJob/:id", verifyToken, verifyAdmin, async (req, res) => {
       const Id = req.params.id
       const filter = { _id: new ObjectId(Id) }
       const updatedJob = req.body
@@ -168,19 +168,19 @@ async function run() {
     })
 
     //show applied jobs by user email
-    app.get("/appliedJobs", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/appliedJobs", verifyToken, async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfAppliedJobs.find(query).toArray()
       res.send(result)
     })
-    app.get("/appliedJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/appliedJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/appliedJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
+    app.delete("/appliedJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfAppliedJobs.deleteOne(query);
@@ -195,19 +195,19 @@ async function run() {
       res.send(result)
     })
     //show all saved jobs by user email
-    app.get("/saveJobs", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/saveJobs", verifyToken, async (req, res) => {
       const email = req.query.email
       const query = { email: email }
       const result = await CollectionOfSaveJobs.find(query).toArray()
       res.send(result)
     })
-    app.get("/saveJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
+    app.get("/saveJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfSaveJobs.findOne(query);
       res.send(result);
     })
-    app.delete("/saveJobs/:id", verifyToken, verifyAdmin, async (req, res) => {
+    app.delete("/saveJobs/:id", verifyToken, async (req, res) => {
       const id = req.params.id
       const query = { _id: new ObjectId(id) }
       const result = await CollectionOfSaveJobs.deleteOne(query);
@@ -366,7 +366,7 @@ async function run() {
       res.send(result);
     })
 
-    app.patch("/users/makeAdmin/:id", verifyToken, verifyAdmin,  async (req, res) => {
+    app.patch("/users/makeAdmin/:id", verifyToken, verifyAdmin, async (req, res) => {
       const Id = req.params.id;
       const filter = { _id: new ObjectId(Id) }
       const updateDoc = {
