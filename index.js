@@ -9,7 +9,7 @@ dotenv.config()
 
 app.use(express.json())
 app.use(cors({
-    origin: ["http://localhost:5173/", "https://job-portal-5d53a.web.app/", "https://job-portal-5d53a.firebaseapp.com/"],
+    origin: ["http://localhost:5173", "https://job-portal-5d53a.web.app", "https://job-portal-5d53a.firebaseapp.com"],
     methods: "GET, POST, PUT, DELETE",
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"]
